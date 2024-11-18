@@ -25,7 +25,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_PASSWORD')])
                     sh """
                         # Docker Hub 로그인
-                        echo "${env.DOCKER_HUB_PASSWORD}" | docker login -u "${dockerHubUsername}" --password-stdin
+                        echo "${DOCKER_PASSWORD}" | docker login -u "${dockerHubUsername}" --password-stdin
 
                         # Docker 이미지 빌드
                         docker build -t ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number} .
