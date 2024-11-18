@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Hello Jenkins!";
+        return "Hello Jenkins! WebHook test!";
     }
 }
