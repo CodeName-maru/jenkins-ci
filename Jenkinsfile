@@ -39,7 +39,7 @@ pipeline {
         }
         stage('Deploy to AWS EC2 VM') {
             steps {
-                sshagent(credentials: ["deploy-key"]) {
+                sshagent(credentials: ["jenkins-ssh-key"]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
                      'docker login -u ${dockerHubUsername} -p ${env.DOCKER_HUB_PASSWORD}; \
