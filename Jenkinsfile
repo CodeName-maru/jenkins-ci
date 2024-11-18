@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Build Docker Image & Push to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_PASSWORD')])
+                withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_PASSWORD')]) {
                     sh """
                         # Docker Hub 로그인
                         echo "${DOCKER_PASSWORD}" | docker login -u "${dockerHubUsername}" --password-stdin
@@ -33,7 +33,7 @@ pipeline {
                         # Docker Hub로 푸시
                         docker push ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}
                     """
-            }
+            }   }
         }
         stage('Deploy to AWS EC2 VM') {
             steps {
