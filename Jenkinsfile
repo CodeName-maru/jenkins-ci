@@ -33,7 +33,8 @@ pipeline {
                         # Docker Hub로 푸시
                         docker push ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}
                     """
-            }   }
+                }
+            }
         }
         stage('Deploy to AWS EC2 VM') {
             steps {
