@@ -21,20 +21,28 @@ pipeline {
                 """
             }
         }
-        stage('Build Docker Image & Push to Docker Hub') {
+        stage('Retrieve Credentials') {
             steps {
                 withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_PASSWORD')]) {
                     sh """
-                        # Docker Hub 로그인
-                        echo "${DOCKER_PASSWORD}" | docker login -u "${dockerHubUsername}" --password-stdin
-
-                        # Docker 이미지 빌드
-                        docker build -t ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number} .
-
-                        # Docker Hub로 푸시
-                        docker push ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}
+                    # Docker Hub 비밀번호를 환경 변수로 설정
+                    echo "${DOCKER_PASSWORD}" > .docker_password
                     """
                 }
+            }
+        }
+        stage('Build Docker Image & Push to Docker Hub') {
+            steps {
+                sh """
+                    # Docker Hub 로그인
+                    docker login -u "${DOCKER_USERNAME}" -p $(cat .docker_password)
+
+                    # Docker 이미지 빌드
+                    docker build -t ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number} .
+
+                    # Docker Hub로 푸시
+                    docker push ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}
+                """
             }
         }
         stage('Deploy to AWS EC2 VM') {
@@ -42,7 +50,7 @@ pipeline {
                 sshagent(credentials: ["jenkins-ssh-key"]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
-                     'docker login -u ${dockerHubUsername} -p ${env.DOCKER_HUB_PASSWORD}; \
+                     'docker login -u ${dockerHubUsername} -p ${cat .docker_password}; \
                       docker pull ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}; \
                       docker stop \$(docker ps -q) || true; \
                       docker run -d -p 80:8080 ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number};'
