@@ -17,7 +17,7 @@ pipeline {
             steps {
                 sh """
                 ./gradlew clean build
-                ls -al build/libs
+                ls -al ./app/build/libs
                 """
             }
         }
