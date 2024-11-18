@@ -35,13 +35,17 @@ pipeline {
             steps {
                 sh """
                     # Docker Hub 로그인
-                    docker login -u "${DOCKER_USERNAME}" -p $(cat .docker_password)
+                    docker login -u "${dockerHubUsername}" -p \$(cat .docker_password)
 
                     # Docker 이미지 빌드
                     docker build -t ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number} .
 
                     # Docker Hub로 푸시
                     docker push ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}
+
+                    # 민감한 정보 삭제
+                    rm -f .docker_password
+
                 """
             }
         }
@@ -50,10 +54,14 @@ pipeline {
                 sshagent(credentials: ["jenkins-ssh-key"]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ubuntu@${deployHost} \
-                     'docker login -u ${dockerHubUsername} -p ${cat .docker_password}; \
+                     'docker login -u ${dockerHubUsername} -p \$(cat .docker_password); \
                       docker pull ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number}; \
                       docker stop \$(docker ps -q) || true; \
                       docker run -d -p 80:8080 ${dockerHubUsername}/${dockerHubRepository}:${currentBuild.number};'
+
+                    # 민감한 정보 삭제
+                    rm -f .docker_password
+
                     """
                 }
             }
