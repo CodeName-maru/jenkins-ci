@@ -21,6 +21,7 @@ pipeline {
                 """
             }
         }
+        // docker hub에 로그인을 스테이지 별로 두 번 진행.
         stage('Retrieve Credentials') {
             steps {
                 withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_PASSWORD')]) {
