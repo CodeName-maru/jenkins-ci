@@ -28,7 +28,9 @@ pipeline {
                 withAWS(region: "${region}", credentials: "aws-key") {
                     ecrLogin()
                     sh """
-                        docker info
+                        echo "Checking Docker config.json..."
+                        cat ~/.docker/config.json
+
 
                         # Docker 이미지 빌드
                         docker build -t ${repository}:${currentBuild.number} .
