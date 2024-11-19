@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Hello Jenkins! 야호야호";
+        return "Hello Jenkins! 웹훅 수정 후 커밋!";
     }
 }
