@@ -27,9 +27,10 @@ pipeline {
             steps {
 
                 withAWS(region: "${region}", credentials: "aws-key") {
-                    ecrLogin()
+                    def login = ecrLogin()
+                    echo "${login}"
+                    sh "${login}"
                     sh """
-                        echo docker info
                         # Docker 이미지 빌드
                         docker build -t ${repository}:${currentBuild.number} .
 
