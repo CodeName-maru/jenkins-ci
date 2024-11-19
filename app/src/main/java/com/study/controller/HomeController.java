@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Hello Jenkins! 웹훅 수정 후 커밋!";
+        return "Hello Jenkins! AWS ECR 커밋 & 푸쉬!";
     }
 }
