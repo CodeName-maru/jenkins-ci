@@ -26,8 +26,9 @@ pipeline {
         stage('Build Docker Image & Push to Docker Hub') {
             steps {
                 withAWS(region: "${region}", credentials: "aws-key") {
-                    ecrLogin()
                     sh """
+                        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecrUrl}
+
                         # Docker 이미지 빌드
                         docker build -t ${repository}:${currentBuild.number} .
 
