@@ -26,10 +26,12 @@ pipeline {
         stage('Build Docker Image & Push to Docker Hub') {
             steps {
                 withAWS(region: "${region}", credentials: "aws-key") {
-                    ecrLogin()
                     sh """
-                        echo "Checking Docker config.json..."
-                        cat ~/.docker/config.json
+                        curl -O https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.4.0/linux-amd64/${ecrLoginHelper}
+                        chmod +x ${ecrLoginHelper}
+                        sudo mv ${ecrLoginHelper} /usr/local/bin/
+
+                        echo '{"credHelpers": {"${ecrUrl}": "ecr-login"}}' > ~/.docker/config.json
 
 
                         # Docker 이미지 빌드
